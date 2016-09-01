@@ -1,6 +1,6 @@
 Name:           dumb-init
 Version:        1.1.3
-Release:        9%{?dist}
+Release:        10%{?dist}
 Summary:        Entry-point for containers that proxies signals
 
 License:        MIT
@@ -11,12 +11,7 @@ Patch0:         dumb-init.fix-test.patch
 
 BuildRequires:  gcc, help2man
 
-# EPEL does not have python3-pytest python3-mock
-%if 0%{?rhel}
-BuildRequires:  python34, python34-pytest python34-mock
-%else
-BuildRequires:  python3, python3-pytest python3-mock
-%endif
+BuildRequires:  python, python2-pytest, python2-mock
 
 # /bin/xxd of vim-common of is needed for non-released versions
 # BuildRequires:  vim-common
@@ -41,7 +36,7 @@ gcc -std=gnu99 %{optflags} -o %{name} dumb-init.c
 help2man --no-discard-stderr --include debian/help2man --no-info --name '%{summary}' ./%{name} > %{name}.1
 
 %check
-PATH=.:$PATH py.test-3 tests/
+PATH=.:$PATH py.test tests/
 
 %install
 install -Dpm0755 %{name} %{buildroot}%{_bindir}/%{name}
@@ -56,6 +51,9 @@ install -Dpm0644 %{name}.1 %{buildroot}%{_mandir}/man1/%{name}.1
 %doc README.md
 
 %changelog
+* Wed Aug 31 2016 Muayyad Alsadi <alsadi@gmail.com> - 1.1.3-10
+- revert to python2
+
 * Wed Aug 31 2016 Muayyad Alsadi <alsadi@gmail.com> - 1.1.3-9
 - support epel
 
