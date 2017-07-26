@@ -1,6 +1,6 @@
 Name:           dumb-init
 Version:        1.1.3
-Release:        11%{?dist}
+Release:        12%{?dist}
 Summary:        Entry-point for containers that proxies signals
 
 License:        MIT
@@ -51,6 +51,9 @@ install -Dpm0644 %{name}.1 %{buildroot}%{_mandir}/man1/%{name}.1
 %doc README.md
 
 %changelog
+* Wed Jul 26 2017 Fedora Release Engineering <releng@fedoraproject.org> - 1.1.3-12
+- Rebuilt for https://fedoraproject.org/wiki/Fedora_27_Mass_Rebuild
+
 * Fri Feb 10 2017 Fedora Release Engineering <releng@fedoraproject.org> - 1.1.3-11
 - Rebuilt for https://fedoraproject.org/wiki/Fedora_26_Mass_Rebuild
 
