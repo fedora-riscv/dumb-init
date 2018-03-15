@@ -1,6 +1,6 @@
 Name:           dumb-init
 Version:        1.1.3
-Release:        14%{?dist}
+Release:        15%{?dist}
 Summary:        Entry-point for containers that proxies signals
 
 License:        MIT
@@ -11,7 +11,7 @@ Patch0:         dumb-init.fix-test.patch
 
 BuildRequires:  gcc, help2man
 
-BuildRequires:  python, python2-pytest, python2-mock
+BuildRequires:  python2, python2-pytest, python2-mock
 
 # /bin/xxd of vim-common of is needed for non-released versions
 # BuildRequires:  vim-common
@@ -51,6 +51,10 @@ install -Dpm0644 %{name}.1 %{buildroot}%{_mandir}/man1/%{name}.1
 %doc README.md
 
 %changelog
+* Thu Mar 15 2018 Iryna Shcherbina <ishcherb@redhat.com> - 1.1.3-15
+- Update Python 2 dependency declarations to new packaging standards
+  (See https://fedoraproject.org/wiki/FinalizingFedoraSwitchtoPython3)
+
 * Wed Feb 07 2018 Fedora Release Engineering <releng@fedoraproject.org> - 1.1.3-14
 - Rebuilt for https://fedoraproject.org/wiki/Fedora_28_Mass_Rebuild
 
