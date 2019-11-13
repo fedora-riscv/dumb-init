@@ -1,31 +1,37 @@
 Name:           dumb-init
-Version:        1.1.3
-Release:        18%{?dist}
+Version:        1.2.2
+Release:        2%{?dist}
 Summary:        Entry-point for containers that proxies signals
 
 License:        MIT
 URL:            https://github.com/Yelp/dumb-init
 Source0:        %{url}/archive/v%{version}/%{name}-%{version}.tar.gz
-# merged upstream patch https://github.com/Yelp/dumb-init/pull/116/
-Patch0:         dumb-init.fix-test.patch
 
 BuildRequires:  gcc, help2man
-
-BuildRequires:  python2, python2-pytest, python2-mock
 
 # /bin/xxd of vim-common of is needed for non-released versions
 # BuildRequires:  vim-common
 
+%if 0%{?fedora}
+%define pytest 1
+%endif
+%if 0%{?el8}
+%define pytest 1
+%endif
+
+%if 0%{?pytest}
+BuildRequires:  python3, python3-pytest, python3-mock
+%endif
+
 %description
 dumb-init is a simple process supervisor and init system designed to run as
-PID 1 inside minimal container environments (such as Docker).
+PID 1 inside minimal container environments (such as Podman and Docker).
 
 * It can handle orphaned zombie processes.
 * It can pass signals properly for simple containers.
 
 %prep
 %setup -q
-%patch0 -p1
 
 %build
 
@@ -36,7 +42,10 @@ gcc -std=gnu99 %{optflags} -o %{name} dumb-init.c
 help2man --no-discard-stderr --include debian/help2man --no-info --name '%{summary}' ./%{name} > %{name}.1
 
 %check
-PATH=.:$PATH py.test tests/
+
+%if 0%{?pytest}
+PATH=.:$PATH timeout --signal=KILL 60 pytest-3 -vv tests/
+%endif
 
 %install
 install -Dpm0755 %{name} %{buildroot}%{_bindir}/%{name}
@@ -51,6 +60,9 @@ install -Dpm0644 %{name}.1 %{buildroot}%{_mandir}/man1/%{name}.1
 %doc README.md
 
 %changelog
+* Thu Nov 14 2019 Muayyad Alsadi <alsadi@gmail.com> - 1.2.2-2
+- latest 1.2.2, use python3 to run test
+
 * Wed Jul 24 2019 Fedora Release Engineering <releng@fedoraproject.org> - 1.1.3-18
 - Rebuilt for https://fedoraproject.org/wiki/Fedora_31_Mass_Rebuild
 
