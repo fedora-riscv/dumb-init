@@ -1,19 +1,27 @@
 Name:           dumb-init
 Version:        1.2.2
-Release:        3%{?dist}
+Release:        4%{?dist}
 Summary:        Entry-point for containers that proxies signals
 
 License:        MIT
 URL:            https://github.com/Yelp/dumb-init
 Source0:        %{url}/archive/v%{version}/%{name}-%{version}.tar.gz
+# merged upstream patch https://github.com/Yelp/dumb-init/pull/182
+Patch0:         dumb-init.sleep.patch
 
 BuildRequires:  gcc, help2man
 
 # /bin/xxd of vim-common of is needed for non-released versions
 # BuildRequires:  vim-common
 
-# https://github.com/Yelp/dumb-init/issues/195
-# BuildRequires:  python3, python3-pytest, python3-mock
+# for some reason %python3_pkgversion returns 3 instead of 36 in EL7
+%if 0%{?el7}
+%define pysuffix 36
+%else
+%define pysuffix 3
+%endif
+
+BuildRequires: python%{pysuffix}, python%{pysuffix}-pytest, python%{pysuffix}-mock
 
 
 %description
@@ -25,6 +33,7 @@ PID 1 inside minimal container environments (such as Podman and Docker).
 
 %prep
 %setup -q
+%patch0 -p1
 
 %build
 
@@ -34,15 +43,12 @@ PID 1 inside minimal container environments (such as Podman and Docker).
 gcc -std=gnu99 %{optflags} -o %{name} dumb-init.c 
 help2man --no-discard-stderr --include debian/help2man --no-info --name '%{summary}' ./%{name} > %{name}.1
 
-#%%check
-# PATH=.:$PATH timeout --signal=KILL 60 pytest-3 -vv tests/
-
+%check
+PATH=.:$PATH timeout --signal=KILL 60 pytest-3 -vv tests/
 
 %install
 install -Dpm0755 %{name} %{buildroot}%{_bindir}/%{name}
 install -Dpm0644 %{name}.1 %{buildroot}%{_mandir}/man1/%{name}.1
-
-
 
 %files
 %{_bindir}/%{name}
@@ -51,6 +57,9 @@ install -Dpm0644 %{name}.1 %{buildroot}%{_mandir}/man1/%{name}.1
 %doc README.md
 
 %changelog
+* Tue Nov 19 2019 Muayyad Alsadi <alsadi@gmail.com> - 1.2.2-4
+- enable tests
+
 * Thu Nov 14 2019 Muayyad Alsadi <alsadi@gmail.com> - 1.2.2-3
 - disable tests
 
