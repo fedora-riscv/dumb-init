@@ -14,7 +14,7 @@ BuildRequires:  gcc, help2man
 # /bin/xxd of vim-common of is needed for non-released versions
 # BuildRequires:  vim-common
 
-# for some reason %python3_pkgversion returns 3 instead of 36 in EL7
+# for some reason %%python3_pkgversion returns 3 instead of 36 in EL7
 %if 0%{?el7}
 %define pysuffix 36
 %else
