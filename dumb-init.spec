@@ -1,6 +1,6 @@
 Name:           dumb-init
 Version:        1.2.2
-Release:        4%{?dist}
+Release:        5%{?dist}
 Summary:        Entry-point for containers that proxies signals
 
 License:        MIT
@@ -57,6 +57,9 @@ install -Dpm0644 %{name}.1 %{buildroot}%{_mandir}/man1/%{name}.1
 %doc README.md
 
 %changelog
+* Tue Nov 19 2019 Muayyad Alsadi <alsadi@gmail.com> - 1.2.2-5
+- fix rpmlint about a comment
+
 * Tue Nov 19 2019 Muayyad Alsadi <alsadi@gmail.com> - 1.2.2-4
 - enable tests
 
