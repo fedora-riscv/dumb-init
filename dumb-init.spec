@@ -1,18 +1,23 @@
 Name:           dumb-init
 Version:        1.2.2
-Release:        8%{?dist}
+Release:        9%{?dist}
 Summary:        Entry-point for containers that proxies signals
 
 License:        MIT
 URL:            https://github.com/Yelp/dumb-init
 Source0:        %{url}/archive/v%{version}/%{name}-%{version}.tar.gz
+
 # merged upstream patch https://github.com/Yelp/dumb-init/pull/182
 Patch0:         dumb-init.sleep.patch
 
-BuildRequires:  gcc, help2man
+# The VERSION constant is not a NUL-terminated string, which sometimes
+# causes builds to fail; make sure VERION.h contains a NUL-terminated string
+# Submitted upstream: https://github.com/Yelp/dumb-init/pull/213
+Patch1:         dumb-init.Makefile.patch
 
-# /bin/xxd of vim-common of is needed for non-released versions
-# BuildRequires:  vim-common
+BuildRequires:  gcc
+BuildRequires:  help2man
+BuildRequires:  make
 
 # for some reason %%python3_pkgversion returns 3 instead of 36 in EL7
 %if 0%{?el7}
@@ -21,7 +26,9 @@ BuildRequires:  gcc, help2man
 %define pysuffix 3
 %endif
 
-BuildRequires: python%{pysuffix}, python%{pysuffix}-pytest, python%{pysuffix}-mock
+BuildRequires: python%{pysuffix}
+BuildRequires: python%{pysuffix}-pytest
+BuildRequires: python%{pysuffix}-mock
 
 
 %description
@@ -34,13 +41,13 @@ PID 1 inside minimal container environments (such as Podman and Docker).
 %prep
 %setup -q
 %patch0 -p1
+%patch1 -p0
 
 %build
+# Force re-creation of VERSION.h
+make --always-make VERSION.h
 
-# uncomment next line when building a non-released version
-# make VERSION.h 
-
-gcc -std=gnu99 %{optflags} -o %{name} dumb-init.c 
+gcc -std=gnu99 %{optflags} -o %{name} dumb-init.c
 help2man --no-discard-stderr --include debian/help2man --no-info --name '%{summary}' ./%{name} > %{name}.1
 
 %check
@@ -57,6 +64,9 @@ install -Dpm0644 %{name}.1 %{buildroot}%{_mandir}/man1/%{name}.1
 %doc README.md
 
 %changelog
+* Mon Nov 30 2020 Artur Frenszek-Iwicki <fedora@svgames.pl> - 1.2.2-9
+- Add a patch to fix random test failures due to non-NUL-terminated strings
+
 * Sat Aug 01 2020 Fedora Release Engineering <releng@fedoraproject.org> - 1.2.2-8
 - Second attempt - Rebuilt for
   https://fedoraproject.org/wiki/Fedora_33_Mass_Rebuild
