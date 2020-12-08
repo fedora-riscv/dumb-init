@@ -1,19 +1,11 @@
 Name:           dumb-init
-Version:        1.2.2
-Release:        9%{?dist}
+Version:        1.2.4
+Release:        1%{?dist}
 Summary:        Entry-point for containers that proxies signals
 
 License:        MIT
 URL:            https://github.com/Yelp/dumb-init
 Source0:        %{url}/archive/v%{version}/%{name}-%{version}.tar.gz
-
-# merged upstream patch https://github.com/Yelp/dumb-init/pull/182
-Patch0:         dumb-init.sleep.patch
-
-# The VERSION constant is not a NUL-terminated string, which sometimes
-# causes builds to fail; make sure VERION.h contains a NUL-terminated string
-# Submitted upstream: https://github.com/Yelp/dumb-init/pull/213
-Patch1:         dumb-init.Makefile.patch
 
 BuildRequires:  gcc
 BuildRequires:  help2man
@@ -40,13 +32,8 @@ PID 1 inside minimal container environments (such as Podman and Docker).
 
 %prep
 %setup -q
-%patch0 -p1
-%patch1 -p0
 
 %build
-# Force re-creation of VERSION.h
-make --always-make VERSION.h
-
 gcc -std=gnu99 %{optflags} -o %{name} dumb-init.c
 help2man --no-discard-stderr --include debian/help2man --no-info --name '%{summary}' ./%{name} > %{name}.1
 
@@ -64,6 +51,11 @@ install -Dpm0644 %{name}.1 %{buildroot}%{_mandir}/man1/%{name}.1
 %doc README.md
 
 %changelog
+* Tue Dec 08 2020 Artur Frenszek-Iwicki <fedora@svgames.pl> - 1.2.4-1
+- Update to v1.2.3
+- Drop Patch0 (longer sleep in tests - backport from upstream)
+- Drop Patch1 (missing NUL-terminator - issue fixed upstream)
+
 * Mon Nov 30 2020 Artur Frenszek-Iwicki <fedora@svgames.pl> - 1.2.2-9
 - Add a patch to fix random test failures due to non-NUL-terminated strings
 
