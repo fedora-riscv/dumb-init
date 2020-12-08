@@ -1,18 +1,15 @@
 Name:           dumb-init
-Version:        1.2.2
-Release:        6%{?dist}
+Version:        1.2.4
+Release:        1%{?dist}
 Summary:        Entry-point for containers that proxies signals
 
 License:        MIT
 URL:            https://github.com/Yelp/dumb-init
 Source0:        %{url}/archive/v%{version}/%{name}-%{version}.tar.gz
-# merged upstream patch https://github.com/Yelp/dumb-init/pull/182
-Patch0:         dumb-init.sleep.patch
 
-BuildRequires:  gcc, help2man
-
-# /bin/xxd of vim-common of is needed for non-released versions
-# BuildRequires:  vim-common
+BuildRequires:  gcc
+BuildRequires:  help2man
+BuildRequires:  make
 
 # for some reason %%python3_pkgversion returns 3 instead of 36 in EL7
 %if 0%{?el7}
@@ -33,14 +30,9 @@ PID 1 inside minimal container environments (such as Podman and Docker).
 
 %prep
 %setup -q
-%patch0 -p1
 
 %build
-
-# uncomment next line when building a non-released version
-# make VERSION.h 
-
-gcc -std=gnu99 %{optflags} -o %{name} dumb-init.c 
+gcc -std=gnu99 %{optflags} -o %{name} dumb-init.c
 help2man --no-discard-stderr --include debian/help2man --no-info --name '%{summary}' ./%{name} > %{name}.1
 
 %check
@@ -57,6 +49,10 @@ install -Dpm0644 %{name}.1 %{buildroot}%{_mandir}/man1/%{name}.1
 %doc README.md
 
 %changelog
+* Tue Dec 08 2020 Artur Frenszek-Iwicki <fedora@svgames.pl> - 1.2.4-1
+- Update to v1.2.4
+- Drop Patch0 (longer sleep in tests - backport from upstream)
+
 * Tue Jan 28 2020 Fedora Release Engineering <releng@fedoraproject.org> - 1.2.2-6
 - Rebuilt for https://fedoraproject.org/wiki/Fedora_32_Mass_Rebuild
 
