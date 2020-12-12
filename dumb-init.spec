@@ -1,5 +1,5 @@
 Name:           dumb-init
-Version:        1.2.4
+Version:        1.2.5
 Release:        1%{?dist}
 Summary:        Entry-point for containers that proxies signals
 
@@ -49,6 +49,9 @@ install -Dpm0644 %{name}.1 %{buildroot}%{_mandir}/man1/%{name}.1
 %doc README.md
 
 %changelog
+* Sun Dec 13 2020 Artur Frenszek-Iwicki <fedora@svgames.pl> - 1.2.5-1
+- Update to v1.2.5
+
 * Tue Dec 08 2020 Artur Frenszek-Iwicki <fedora@svgames.pl> - 1.2.4-1
 - Update to v1.2.4
 - Drop Patch0 (longer sleep in tests - backport from upstream)
